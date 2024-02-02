@@ -1,0 +1,72 @@
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let ch = window.innerHeight;
+let cw = window.innerWidth;
+
+let charArr = [
+    'あ', 'い', 'う', 'え', 'お',  
+    'ア', 'イ', 'ウ', 'エ', 'オ',  
+    'а', 'б', 'в', 'г', 'д',
+    'е', 'ё', 'ж', 'з', 'и',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
+    'l', 'm', 'n', 'o', 'p', 'q', 'r,', 's', 't', 'u', 'v', 'w', 'x',
+    'y', 'z', '0', '1', '2', '3', '4',
+     '5', '6', '7', '8', '9', '!', '@'
+
+];
+
+let maxCharCount = 1000; // Ajuste esse valor para controlar a densidade dos caracteres
+let fallingCharArr = [];
+let fontSize = 10; // Ajuste o tamanho da fonte se necessário
+let maxColumns = cw / fontSize;
+
+canvas.width = cw;
+canvas.height = ch;
+
+let frame = 0;
+
+class FallingChar {
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+
+    draw(ctx){
+        this.value = charArr[Math.floor(Math.random() * (charArr.length))].toUpperCase();
+        this.speed = Math.random() * fontSize * 3 / 4 + fontSize * 3 / 4;
+
+        ctx.fillStyle = "rgba(0, 255, 0, 1)"; // Correção da cor
+        ctx.font = fontSize + "px Roboto-sans"; // Correção do tipo de fonte
+        ctx.fillText(this.value, this.x, this.y);
+        this.y += this.speed;
+
+        if (this.y > ch) {
+            this.y = 0;
+            this.x = Math.floor(Math.random() * maxColumns) * fontSize;
+        }
+    }
+}
+
+let update = () => {
+    if (fallingCharArr.length < maxCharCount) {
+        let fallingChar = new FallingChar(Math.floor(Math.random() * maxColumns) * fontSize, Math.random() * ch / 2 - 50);
+        fallingCharArr.push(fallingChar);
+    }
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, cw, ch);
+
+    // Otimização: movendo a condição para fora do loop
+    if (frame % 2 === 0) {
+        for (let i = 0; i < fallingCharArr.length; i++) {
+            fallingCharArr[i].draw(ctx);
+        }
+    }
+
+    requestAnimationFrame(update);
+    frame++;
+}
+
+update();
+update
